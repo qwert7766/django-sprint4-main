@@ -92,7 +92,7 @@ class Post(models.Model):
         Category,
         on_delete=models.SET_NULL,
         null=True,
-        blank=False,  # Обязательное поле при создании
+        blank=False,
         verbose_name='Категория'
     )
     is_published = models.BooleanField(
@@ -104,6 +104,11 @@ class Post(models.Model):
         auto_now_add=True,
         verbose_name='Добавлено'
     )
+    image = models.ImageField(
+        'Изображение',
+        upload_to='posts/',
+        blank=True
+    )
 
     class Meta:
         verbose_name = 'публикация'
@@ -111,3 +116,32 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Comment(models.Model):
+    post = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+        related_name='comments',
+        verbose_name='Публикация'
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='Автор комментария'
+    )
+    text = models.TextField(
+        'Текст комментария'
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Добавлено'
+    )
+
+    class Meta:
+        ordering = ('created_at',)
+        verbose_name = 'комментарий'
+        verbose_name_plural = 'Комментарии'
+
+    def __str__(self):
+        return self.text[:50]
